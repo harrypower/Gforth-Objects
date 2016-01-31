@@ -63,7 +63,7 @@ object class
             dup string-addr ! string-size @ + swap dup string-size @ + string-size ! move
          else 2drop
          then
-      else
+      else \ allows a new string to be created if no string currently present
          dup 0 >
          if
             dup allocate throw
