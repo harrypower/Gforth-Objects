@@ -90,6 +90,7 @@ object class
 	\ if no match found caddr1 u1 returns and empty string and caddr2 u2 contains the this objects string
 	\ nflag is true if string is split and returned false if this objects string is returned
 	\ Note the returned strings are valid until a new string is placed in this string object
+   \ This string object does not get changed in any way after this operation!
    	{ caddr u }
    	string-addr @ string-size @ caddr u search true =
    	if
