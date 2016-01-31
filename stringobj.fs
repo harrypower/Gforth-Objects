@@ -251,7 +251,7 @@ end-class strings
    testc [bind] strings @$x type cr
    testc [bind] strings @$x type cr
    testc [bind] strings @$x type cr
-   testc [bind] strings strings-destruct
+   testc [bind] strings destruct
    testc free throw ;
 
 : testall
