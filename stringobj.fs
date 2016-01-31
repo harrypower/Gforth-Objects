@@ -38,16 +38,19 @@ object class
    m: ( string -- ) \ free allocated memory
       this [current] construct ;m overrides destruct
    m: ( caddr u string -- ) \ store string
-      dup allocate throw { u caddr1 }
-      caddr1 u move
-      string-test @ string-test =
+      dup 0>
       if
-         string-addr @ free throw
-         0 string-test !
-      then
-      caddr1 string-addr !
-      u string-size !
-      string-test string-test ! ;m method !$
+         dup allocate throw { u caddr1 }
+         caddr1 u move
+         string-test @ string-test =
+         if
+            string-addr @ free throw
+            0 string-test !
+         then
+         caddr1 string-addr !
+         u string-size !
+         string-test string-test !
+      else 2drop then ;m method !$
    m: ( string -- caddr u ) \ retrieve string
       string-test @ string-test =
       if
@@ -57,26 +60,19 @@ object class
    m: ( caddr u string -- ) \ add a string to this string at end of!
       string-test @ string-test =
       if \ resize
-         dup 0 >
+         dup 0>
          if
             dup string-size @ + string-addr @ swap resize throw
             dup string-addr ! string-size @ + swap dup string-size @ + string-size ! move
          else 2drop
          then
       else \ allows a new string to be created if no string currently present
-         dup 0 >
-         if
-            dup allocate throw
-            dup string-addr !
-            swap dup string-size ! move
-            string-test string-test !
-         else 2drop
-         then
+         this [current] !$
       then ;m method !+$
    m: ( caddr u string -- ) \ add string to begining of this string
       string-test @ string-test =
       if \ resize
-         dup 0 >
+         dup 0>
          if
             dup string-size @ + string-addr @ swap resize throw
             string-addr !
@@ -86,14 +82,7 @@ object class
          else 2drop
          then
       else \ make new string
-         dup 0 >
-         if
-         dup allocate throw
-         dup string-addr !
-         swap dup string-size ! move
-         string-test string-test !
-         else 2drop
-         then
+         this [current] !$
       then ;m method !<+$
     m: ( caddr u string -- caddr1 u1 caddr2 u2 nflag ) \ split the stored string at caddr u if found
 	\ caddr u will be removed and caddr1 u1 will be split string before caddr u
@@ -128,7 +117,7 @@ object class
    m: ( strings -- ) \ initalize strings object
       strings-test @ strings-test =
       if
-         array @ 0 >
+         array @ 0>
          if \ deallocate memory allocated for the array and free the string objects
             qty @ 0 ?do array @ i cell * + @ dup [bind] string destruct free throw loop
             array @ free throw
@@ -145,7 +134,7 @@ object class
    m: ( strings -- ) \ free allocated memory
       this [current] construct ;m overrides destruct
    m: ( caddr u strings -- ) \ store a string in handler
-      array @ 0 =
+      array @ 0=
       if
          cell allocate throw array !
          1 qty !
@@ -157,7 +146,7 @@ object class
          qty @ 1+ qty !
       then 0 index ! ;m method !$x
    m: ( strings -- caddr u ) \ retrieve string from array at next index
-      qty @ 0 >
+      qty @ 0>
       if
          array @ index @ cell * + @ [bind] string @$
          index @ 1+ index !
@@ -168,7 +157,7 @@ object class
    \ caddr u contain the string if nflag is false
    \ if nflag is true caddr u do not contain nindex string
       abs dup qty @ <
-      qty @ 0 > and
+      qty @ 0> and
       if
          array @ swap cell * + @ [bind] string @$ false
       else drop 0 0 true
@@ -177,7 +166,7 @@ object class
    \ split that next string at caddr u if possible
    \ caddr1 u1 is empty if caddr u string is not found
    \ caddr2 u2 contains the left over string if caddr u string is found
-      qty @ 0 >
+      qty @ 0>
       if
          array @ index @ cell * + @ [bind] string split$ drop
          index @ 1+ index !
@@ -190,7 +179,7 @@ object class
    \ Note nstring-source$ string will contain the left over part after last split
    \ include this string into this strings or add nstring-split$ contents to the source$ before splitting
       { sp$ src$ }
-      sp$ [bind] string len$ 0 > src$ [bind] string len$ 0 > and true =
+      sp$ [bind] string len$ 0> src$ [bind] string len$ 0> and true =
       if
          begin
             sp$ [bind] string @$ src$ [bind] string split$ true =
@@ -234,8 +223,8 @@ end-class strings
    testing [bind] string @$ type cr
    s" just this string!" testing !$
    testing [bind] string @$ type cr
-   testing [bind] string destruct testing free throw
-   testb [bind] string destruct testb free throw ;
+   testing [bind] string destruct testing free throw 0 to testing
+   testb [bind] string destruct testb free throw 0 to testb ;
 
 : dotesting
    1000 0 ?do stringtest loop ;
@@ -252,8 +241,15 @@ end-class strings
    testc [bind] strings @$x type cr
    testc [bind] strings @$x type cr
    testc [bind] strings destruct
-   testc free throw ;
+   testc free throw 0 to testc  ;
+
+0 value testa
+: zerotest
+   string heap-new to testa
+   s" " testa !$
+   testa @$ .s cr ;
 
 : testall
-   1000 0 ?do ." stringtest" cr stringtest ." stringstest" cr stringstest loop ;
+   1000 0 ?do ." stringtest" cr stringtest ." stringstest" cr stringstest loop
+   zerotest 2drop  ;
 )
