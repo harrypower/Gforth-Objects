@@ -13,7 +13,7 @@
 \    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 \
 \ This code is for string handling.   There are two objects.
-\ Object string is for single strings and all memory is managed by object.
+\ Object string is for single string and all memory is managed by object.
 \ Object strings uses object string to handle as many stings of any size you want!
 \ You can think of string as a container for a string and strings is a container for
 \ any collection of strings you want.
