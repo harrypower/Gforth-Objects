@@ -15,27 +15,27 @@
 \ POSTPONE ?dup 2dup move Variable 2@ 2! ! ['] >body = 2drop ' r@ +!
 \ Constant recurse 1+ BEGIN 0= UNTIL negate Literal ." .
 \ from CORE-EXT :
-\ tuck pick nip true <> 0> erase Value :noname compile, 
+\ tuck pick nip true <> 0> erase Value :noname compile,
 \ from BLOCK-EXT :
-\ \ 
+\ \
 \ from DOUBLE :
-\ 2Constant 
+\ 2Constant
 \ from EXCEPTION :
-\ throw catch 
+\ throw catch
 \ from EXCEPTION-EXT :
-\ abort" 
+\ abort"
 \ from FILE :
-\ ( 
+\ (
 \ from FLOAT :
-\ faligned floats 
+\ faligned floats
 \ from FLOAT-EXT :
-\ dfaligned dfloats sfaligned sfloats 
+\ dfaligned dfloats sfaligned sfloats
 \ from LOCAL :
-\ TO 
+\ TO
 \ from MEMORY :
-\ allocate resize free 
+\ allocate resize free
 \ from SEARCH :
-\ get-order set-order wordlist get-current set-current 
+\ get-order set-order wordlist get-current set-current
 
 \ needs struct.fs
 
@@ -111,7 +111,7 @@ end-struct selector%
 
 \ pointers to interface maps (for classes) <- interface-map points here
 \ interface%/class% pointer                <- (object-)map  points here
-\ xts of methods 
+\ xts of methods
 
 
 \ code
@@ -180,7 +180,7 @@ does> ( ... object -- ... )
     + dup @ ( interface-mapp interface-map )
     dup r> =
     if
-	dup @ interface-map 2@ nip save-mem drop	
+	dup @ interface-map 2@ nip save-mem drop
 	swap !
     else
 	2drop
@@ -327,7 +327,7 @@ variable public-wordlist
     dup >r + >r over r> rot move ( addr1 ; R: u2 addr2 )
     free throw
     r> dup r> ;
-    
+
 : implementation ( interface -- ) \ objects- objects
     \g The current class implements @var{interface}. I.e., you can
     \g use all selectors of the interface in the current class and its
@@ -350,7 +350,7 @@ variable public-wordlist
 \ this/self, instance variables etc.
 
 \ rename "this" into "self" if you are a Smalltalk fiend
-uvalue this ( -- object ) \ objects- objects
+0 value this ( -- object ) \ objects- objects
 \g the receiving object of the current method (aka active object).
 : to-this ( object -- ) \ objects- objects
     \g Set @code{this} (used internally, but useful when debugging).
@@ -368,7 +368,7 @@ uvalue this ( -- object ) \ objects- objects
     POSTPONE this
     POSTPONE >r
     POSTPONE to-this ;
-    
+
 : m: ( -- xt colon-sys; run-time: object -- ) \ objects- objects
     \g Start a method definition; @var{object} becomes new @code{this}.
     :noname enterm ;
