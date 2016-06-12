@@ -69,7 +69,7 @@ object class
       else \ allows a new string to be created if no string currently present
          this [current] !$
       then ;m method !+$
-   m: ( caddr u string -- ) \ add string to begining of this string
+   m: ( caddr u string -- ) \ add string to beginning of this string
       string-test @ string-test =
       if \ resize
          dup 0>
