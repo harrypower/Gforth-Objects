@@ -18,7 +18,7 @@
 \ You can think of string as a container for a string and strings is a container for
 \ any collection of strings you want.
 
-require objects.fs
+require ./objects.fs
 
 interface
    selector destruct ( -- ) \ to free allocated memory in objects that use this
