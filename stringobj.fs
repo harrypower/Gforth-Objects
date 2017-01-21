@@ -20,9 +20,11 @@
 
 require ./objects.fs
 
-interface
-   selector destruct ( -- ) \ to free allocated memory in objects that use this
-end-interface destruction
+[ifundef] destruction
+  interface
+     selector destruct ( -- ) \ to free allocated memory in objects that use this
+  end-interface destruction
+[endif]
 
 object class
    destruction implementation
