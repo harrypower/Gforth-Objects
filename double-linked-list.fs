@@ -33,7 +33,7 @@ object class
   struct
     cell% field next-forward-link
     cell% field next-back-link
-  end-struct link-links
+  end-struct link-links%
   public
   m: ( -- ) \ constructor
     dll-test? dll-test? @ <> if
@@ -50,8 +50,37 @@ object class
   m: ( -- ) \ destructor
     dll-test? dll-test? @ = if
       0 size-link @ = if 0 dll-test? ! exitm then  \ nothing to deallocate
+      \ *** code to deallocate through the linked list nodes here ***
     then
   ;m overrides destruct
   m: ( -- ) \ print info
+    cr size-link @ u. ." size" cr
+    first-link @ u. ." start address" cr
+    last-link @ u. ." last address" cr
+    current-link @ u. ." current address" cr
+    dll-test? @ dll-test? = if ." construct done!" cr else ." construct not done!" cr then
+    current-link @ 0 > dll-test? @ dll-test? = and true =
+    if
+      current-link @ next-back-link @ u. ." current node back link address" cr
+      current-link @ next-forward-link @ u. ." current node forward link address" cr
+    then
   ;m overrides print
+  m: ( -- ) \ add to link list a node at the end and update all the link list node data
+    size-link @ 0 = if
+      link-links% %size allocate throw
+      dup first-link !
+      dup last-link !
+      dup current-link !
+      dup dup next-back-link !
+      dup next-forward-link !
+      1 size-link !
+    else
+      link-links% %size allocate throw
+      dup last-link @ next-forward-link !
+      dup last-link @ swap next-back-link !
+      last-link !
+      size-link @ 1+ size-link !
+    then
+  ;m method dll!
+
 end-class double-linked-list
