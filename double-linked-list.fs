@@ -150,7 +150,7 @@ object class
 end-class double-linked-list
 
 \\\  this ignors the rest of the file but only works in gforth version 0.7.9 and up
-\ uncomment the above line to run the following tests
+\ comment out the above line to run the following tests
 double-linked-list heap-new value lltest
 lltest print
 s" hello world" lltest ll!
@@ -160,6 +160,8 @@ lltest print
 lltest ll@> . cr type cr
 lltest ll@> . cr type cr
 lltest ll@> . cr type cr
+lltest ll@< . cr type cr
+lltest ll@  type cr
 lltest ll-size@ . cr
 lltest print
 lltest destruct
