@@ -51,8 +51,7 @@ object class
       dll-test? dll-test? ! \ ensure future calls know constructor has initalized stuff
     else
       this destruct
-    then
-  ;m overrides construct
+    then ;m overrides construct
   m: ( -- ) \ destructor
     this construct? if
       0 size-link @ = if exitm then  \ nothing to deallocate
@@ -66,8 +65,7 @@ object class
       0 first-link !
       0 last-link !
       0 current-link !
-    then
-  ;m overrides destruct
+    then ;m overrides destruct
   m: ( -- ) \ print info
     cr size-link @ u. ." link list size" cr
     first-link @ u. ." start node's address" cr
@@ -80,8 +78,7 @@ object class
       current-link @ next-forward-link @ u. ." current node's forward link address" cr
       ." current node data dump:" cr
       this ll@ dump cr
-    then
-  ;m overrides print
+    then ;m overrides print
   m: { caddr u -- } \ add to link list a node at the end and update all the link list node data
     \ caddr  is address of data to add to this node
     \ u is the quantity of bytes to add to this node
@@ -105,8 +102,7 @@ object class
         payload-size u swap !
         size-link @ 1+ size-link !
       then
-    then
-  ;m method ll!
+    then ;m method ll!
   m: ( -- caddr u ) \ get node data from current node
     \ if there is no nodes in the linked list u will be 0 and caddr will be 0 indicating a null retrieval
     this construct? size-link @ 0 > and
@@ -114,11 +110,9 @@ object class
       current-link @ dup node-payload swap payload-size @
     else
       0 0 \ return null data if there are no nodes in this linked list
-    then
-  ;m overrides ll@
+    then ;m overrides ll@
   m: ( -- u ) \ get linked list node size
-    size-link @
-  ;m method ll-size@
+    size-link @ ;m method ll-size@
   m: ( -- nflag ) \ step one node back from current node.
     \ nflag is true if step can not happend because at start node already or if there is no nodes in linked list to move to!
     \ nflag is false if step did happen!
