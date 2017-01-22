@@ -13,3 +13,9 @@ object use the internal string words!
 This is the dependency for the code in this repo.  It is a copy of the file included with
 Gforth.  I include it here so non Gforth systems can use these objects.  Objects.fs uses
 standard forth words so should work on other systems.  I have not modified this file in any way.
+The file is from the current version of Gforth 0.7.9_20160923
+
+## double-linked-list.fs
+This is a basic double linked list object that can take a payload of memory.  The link list along with the memory payload
+is allocated on the heap.  Inherit this object to add more methods or just use it to store some dynamic sized memory items!
+Stringobj.fs does not use this at this moment but i may convert strings to use this link list in the future!
