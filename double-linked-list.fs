@@ -26,6 +26,7 @@ object class
   destruction implementation
   selector ll@
   selector construct?
+  selector ll>
   cell% inst-var size-link
   cell% inst-var first-link
   cell% inst-var last-link
@@ -47,16 +48,24 @@ object class
       0 first-link !
       0 last-link !
       0 current-link !
-      dll-test? dll-test? ! \ ensure future calls know constructor has allocated stuff
+      dll-test? dll-test? ! \ ensure future calls know constructor has initalized stuff
     else
       this destruct
-      0 dll-test? ! \ dll memory is freed so reset the test!
     then
   ;m overrides construct
   m: ( -- ) \ destructor
     this construct? if
       0 size-link @ = if exitm then  \ nothing to deallocate
-      \ *** code to deallocate through the linked list nodes here ***
+      first-link @ current-link !
+      size-link @ 0 ?do
+        current-link @ next-forward-link @
+        current-link @ free throw
+        current-link !
+      loop
+      0 size-link !
+      0 first-link !
+      0 last-link !
+      0 current-link !
     then
   ;m overrides destruct
   m: ( -- ) \ print info
@@ -125,7 +134,7 @@ object class
       current-link @ next-forward-link @ current-link ! false
     else
       true
-    then ;m method ll>
+    then ;m overrides ll>
   m: ( -- caddr u nflag ) \ get node payload and step to next node
     \ nflag is true if step can not happen because at last node already or if there is no nodes in linked list to step to!
     \ nflag is false if step did happen
@@ -140,6 +149,8 @@ object class
     this ll@ this ll< ;m method ll@<
 end-class double-linked-list
 
+\\\  this ignors the rest of the file but only works in gforth version 0.7.9 and up
+\ uncomment the above line to run the following tests
 double-linked-list heap-new value lltest
 lltest print
 s" hello world" lltest ll!
@@ -150,3 +161,6 @@ lltest ll@> . cr type cr
 lltest ll@> . cr type cr
 lltest ll@> . cr type cr
 lltest ll-size@ . cr
+lltest print
+lltest destruct
+lltest print
