@@ -24,6 +24,7 @@ require ./objects.fs
 
 object class
   destruction implementation
+  selector ll@
   cell% inst-var size-link
   cell% inst-var first-link
   cell% inst-var last-link
@@ -33,6 +34,8 @@ object class
   struct
     cell% field next-forward-link
     cell% field next-back-link
+    cell% field payload-size  \ note node payload data size limit to cell quantity
+    cell% field node-payload
   end-struct link-links%
   public
   m: ( -- ) \ constructor
@@ -49,38 +52,53 @@ object class
   ;m overrides construct
   m: ( -- ) \ destructor
     dll-test? dll-test? @ = if
-      0 size-link @ = if 0 dll-test? ! exitm then  \ nothing to deallocate
+      0 size-link @ = if exitm then  \ nothing to deallocate
       \ *** code to deallocate through the linked list nodes here ***
     then
   ;m overrides destruct
   m: ( -- ) \ print info
-    cr size-link @ u. ." size" cr
-    first-link @ u. ." start address" cr
-    last-link @ u. ." last address" cr
-    current-link @ u. ." current address" cr
+    cr size-link @ u. ." link list size" cr
+    first-link @ u. ." start node's address" cr
+    last-link @ u. ." the last node's address" cr
+    current-link @ u. ." current node's address" cr
     dll-test? @ dll-test? = if ." construct done!" cr else ." construct not done!" cr then
-    current-link @ 0 > dll-test? @ dll-test? = and true =
+    size-link @ 0 > dll-test? @ dll-test? = and true =
     if
-      current-link @ next-back-link @ u. ." current node back link address" cr
-      current-link @ next-forward-link @ u. ." current node forward link address" cr
+      current-link @ next-back-link @ u. ." current node's back link address" cr
+      current-link @ next-forward-link @ u. ." current node's forward link address" cr
+      ." current node data dump:" cr
+      this ll@ dump cr
     then
   ;m overrides print
-  m: ( -- ) \ add to link list a node at the end and update all the link list node data
+  m: { caddr u -- } \ add to link list a node at the end and update all the link list node data
+    \ caddr  is address of data to add to this node
+    \ u is the quantity of bytes to add to this node
     size-link @ 0 = if
-      link-links% %size allocate throw
+      link-links% %size u + allocate throw
       dup first-link !
       dup last-link !
       dup current-link !
       dup dup next-back-link !
-      dup next-forward-link !
+      dup dup next-forward-link !
+      dup caddr swap node-payload u move
+      payload-size u swap !
       1 size-link !
     else
-      link-links% %size allocate throw
+      link-links% %size u + allocate throw
       dup last-link @ next-forward-link !
       dup last-link @ swap next-back-link !
-      last-link !
+      dup last-link !
+      dup caddr swap node-payload u move
+      payload-size u swap !
       size-link @ 1+ size-link !
     then
-  ;m method dll!
-
+  ;m method ll!
+  m: ( -- caddr u ) \ get node data from current node
+    size-link @ 0 <>
+    if
+      current-link @ dup node-payload swap payload-size @
+    else
+      0 0 \ return null data if there are no nodes in this linked list
+    then
+  ;m overrides ll@
 end-class double-linked-list
