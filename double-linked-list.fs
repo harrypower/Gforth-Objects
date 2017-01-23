@@ -25,8 +25,6 @@ require ./objects.fs
 object class
   destruction implementation
   selector ll@
-  selector construct?
-  selector ll>
   cell% inst-var size-link
   cell% inst-var first-link
   cell% inst-var last-link
@@ -40,7 +38,7 @@ object class
     cell% field node-payload
   end-struct link-links%
   m: ( -- nflag ) \ nflag is true if linked list is constructed false if not constructed yet!
-    dll-test? dll-test? @ = ;m overrides construct?
+    dll-test? dll-test? @ = ;m method construct?
   public
   m: ( -- ) \ constructor
     this construct? false = if
@@ -128,7 +126,7 @@ object class
       current-link @ next-forward-link @ current-link ! false
     else
       true
-    then ;m overrides ll>
+    then ;m method ll>
   m: ( -- caddr u nflag ) \ get node payload and step to next node
     \ nflag is true if step can not happen because at last node already or if there is no nodes in linked list to step to!
     \ nflag is false if step did happen
