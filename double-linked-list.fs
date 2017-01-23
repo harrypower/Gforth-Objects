@@ -147,7 +147,7 @@ object class
     last-link @ current-link ! ;m method ll-set-end
 end-class double-linked-list
 
-\\\  this ignors the rest of the file but only works in gforth version 0.7.9 and up
+\\\ these three slashs cause the rest of the file to be not interpreted but only works in gforth version 0.7.9 and up
 \ comment out the above line to run the following tests
 double-linked-list heap-new value lltest
 lltest print
@@ -167,7 +167,7 @@ lltest ll-set-end
 lltest ll@ type cr
 lltest ll-set-start
 lltest ll@ type cr
-lltest ll> lltest ll>
+lltest ll> throw lltest ll> throw
 lltest ll@ type cr
 lltest print
 lltest destruct
