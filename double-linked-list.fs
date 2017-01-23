@@ -141,6 +141,10 @@ object class
     \ caddr and u will will be the node payload before the step if there are any linked list nodes
     \ if there are no linked list nodes caddr and u will both be 0
     this ll@ this ll< ;m method ll@<
+  m: ( -- ) \ set link list retrieve to the start of this linked list
+    first-link @ current-link ! ;m method ll-set-start
+  m: ( -- ) \ set link list retrieve to the end of this linked list
+    last-link @ current-link ! ;m method ll-set-end
 end-class double-linked-list
 
 \\\  this ignors the rest of the file but only works in gforth version 0.7.9 and up
@@ -150,13 +154,21 @@ lltest print
 s" hello world" lltest ll!
 s" next line" lltest ll!
 s" line 3" lltest ll!
+s" the last stuff in this list" lltest ll!
 lltest print
+lltest ll@> . cr type cr
 lltest ll@> . cr type cr
 lltest ll@> . cr type cr
 lltest ll@> . cr type cr
 lltest ll@< . cr type cr
 lltest ll@  type cr
 lltest ll-size@ . cr
+lltest ll-set-end
+lltest ll@ type cr
+lltest ll-set-start
+lltest ll@ type cr
+lltest ll> lltest ll>
+lltest ll@ type cr
 lltest print
 lltest destruct
 lltest print
