@@ -37,7 +37,7 @@ object class
 	;m overrides construct
 end-class struct-base
 
-\ \\\ The following is an example of how to use this struct-base
+\\\ The following is an example of how to use this struct-base
 \ comment the above line to see example
 struct-base class  \ this would be the new structure to make and work with
 	protected
@@ -72,4 +72,4 @@ cr
 5 nextstruct somec.@ . cr
 
 20 nextstruct construct  \ frees the old structure from memory and allocates a new structure array of size 20
-0 nextstruct somea.@ . cr  \ shows the data in structure starts all at 0 
+0 nextstruct somea.@ . cr  \ shows the data in structure starts all at 0
