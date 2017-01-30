@@ -19,3 +19,8 @@ The file is from the current version of Gforth 0.7.9_20160923
 This is a basic double linked list object that can take a payload of memory.  The link list along with the memory payload
 is allocated on the heap.  Inherit this object to add more methods or just use it to store some dynamic sized memory items!
 Stringobj.fs does not use this at this moment but i may convert strings to use this link list in the future!
+
+## object-struct-helper.fs
+This is an object to make working with structures easier!  
+The object is called struct-base and all it does is allocate memory at time of creation with construct member
+The idea is to inherit from this class to make a specific structure with the retrieve and store words for the specific structure.
