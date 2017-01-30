@@ -25,7 +25,7 @@ object class
 	cell% inst-var field-size
 	cell% inst-var place
 	cell% inst-var construct?
-	m: ( u struct-base -- u )
+	m: ( uindex struct-base -- uaddr )
 		size @ * place @ +
 	;m method ::
 	public
@@ -46,7 +46,7 @@ struct-base class  \ this would be the new structure to make and work with
 		char% field someb
 		cell% field somec
 	end-struct somestruct%
-	m: ( uindex mystruct -- u )
+	m: ( uindex mystruct -- uaddr )
 		this [parent] ::
 	;m overrides ::
 	public
