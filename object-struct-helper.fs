@@ -40,7 +40,12 @@ object class
 		place @ size @ erase
 	;m overrides construct
   m: ( struct-base -- ) \ destructor
-    place @ 0 <> if place @ free throw then
+    place @ 0 <> if
+      place @ free throw
+      0 place !
+      0 size !
+      0 field-size !
+    then
   ;m overrides destruct
 end-class struct-base
 
@@ -69,6 +74,7 @@ struct-base class  \ this would be the new structure to make and work with
 end-class mystruct
 
 20 mystruct heap-new value nextstruct \ this creates mystruct in memory to use as nextstruct
+nextstruct destruct
 nextstruct destruct
 25 nextstruct construct
 cr
