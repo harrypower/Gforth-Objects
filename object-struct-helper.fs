@@ -19,32 +19,29 @@
 
 require ./objects.fs
 
-[ifundef] construction?
+[ifundef] destruction
   interface
-     selector construct? ( -- nflag ) \ method to test first execution of constructor
-  end-interface construction?
+     selector destruct ( -- ) \ to free allocated memory in objects that use this
+  end-interface destruction
 [endif]
 
 object class
-	construction? implementation
+  destruction implementation
 	protected
 	cell% inst-var size
 	cell% inst-var field-size
 	cell% inst-var place
-	cell% inst-var struct-base?
 	m: ( uindex struct-base -- uaddr )
 		size @ * place @ +
 	;m method ::
-	m: ( -- nflag ) \ nflag is true when construct has been run for the first time false for construct never run
-		struct-base? struct-base? @ =
-	;m overrides construct?
 	public
-	m: ( ustruct-size ustruct struct-base -- )
-		this construct? if place @ free throw	then
+	m: ( ustruct-size ustruct struct-base -- ) \ constructor Note structure memory allocated so call destruct before construct to free memory
 		%size dup field-size ! * dup size ! allocate throw place !
-		struct-base? struct-base? !
 		place @ size @ erase
 	;m overrides construct
+  m: ( struct-base -- ) \ destructor
+    place @ 0 <> if place @ free throw then
+  ;m overrides destruct
 end-class struct-base
 
 \\\ The following is an example of how to use this struct-base
@@ -72,7 +69,8 @@ struct-base class  \ this would be the new structure to make and work with
 end-class mystruct
 
 20 mystruct heap-new value nextstruct \ this creates mystruct in memory to use as nextstruct
-
+nextstruct destruct
+25 nextstruct construct
 cr
 3234 0 nextstruct somea.!  \ examples of using the structure array just created
 0 nextstruct somea.@ . cr
@@ -80,6 +78,7 @@ cr
 0 nextstruct someb.c@ . cr
 723 5 nextstruct somec.!
 5 nextstruct somec.@ . cr
-
-20 nextstruct construct  \ frees the old structure from memory and allocates a new structure array of size 20
+nextstruct destruct  \ free memory for structure used
+20 nextstruct construct  \ allocate a new structure array of size 20
 0 nextstruct somea.@ . cr  \ shows the data in structure starts all at 0
+nextstruct destruct

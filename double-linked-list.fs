@@ -21,22 +21,14 @@ require ./objects.fs
      selector destruct ( -- ) \ to free allocated memory in objects that use this
   end-interface destruction
 [endif]
-[ifundef] construction?
-  interface
-     selector construct? ( -- nflag ) \ method to test first execution of constructor
-  end-interface construction?
-[endif]
-
 
 object class
   destruction implementation
-  construction? implementation
   selector ll@
   cell% inst-var size-link
   cell% inst-var first-link
   cell% inst-var last-link
   cell% inst-var current-link
-  cell% inst-var dll-test?
   protected
   struct
     cell% field next-forward-link
@@ -44,22 +36,15 @@ object class
     cell% field payload-size  \ note node payload data size limit to cell quantity
     cell% field node-payload
   end-struct link-links%
-  m: ( -- nflag ) \ nflag is true if linked list is constructed false if not constructed yet!
-    dll-test? dll-test? @ = ;m overrides construct?
   public
-  m: ( -- ) \ constructor
-    this construct? false = if
+  m: ( -- ) \ constructor Note using this member will leak memory.. use destruct to deallocate memory
       0 size-link !
       0 first-link !
       0 last-link !
       0 current-link !
-      dll-test? dll-test? ! \ ensure future calls know constructor has initalized stuff
-    else
-      this destruct
-    then ;m overrides construct
+  ;m overrides construct
   m: ( -- ) \ destructor
-    this construct? if
-      0 size-link @ = if exitm then  \ nothing to deallocate
+    first-link @ 0 <> size-link @ 0 <> and if
       first-link @ current-link !
       size-link @ 0 ?do
         current-link @ next-forward-link @
@@ -76,8 +61,7 @@ object class
     first-link @ u. ." start node's address" cr
     last-link @ u. ." the last node's address" cr
     current-link @ u. ." current node's address" cr
-    this construct? if ." construct done!" cr else ." construct not done!" cr then
-    size-link @ 0 > this construct? and true =
+    size-link @ 0 >
     if
       current-link @ next-back-link @ u. ." current node's back link address" cr
       current-link @ next-forward-link @ u. ." current node's forward link address" cr
@@ -87,30 +71,29 @@ object class
   m: { caddr u -- } \ add to link list a node at the end and update all the link list node data
     \ caddr  is address of data to add to this node
     \ u is the quantity of bytes to add to this node
-    this construct? if
-      size-link @ 0 = if
-        link-links% %size u + allocate throw
-        dup first-link !
-        dup last-link !
-        dup current-link !
-        dup dup next-back-link !
-        dup dup next-forward-link !
-        dup caddr swap node-payload u move
-        payload-size u swap !
-        1 size-link !
-      else
-        link-links% %size u + allocate throw
-        dup last-link @ next-forward-link !
-        dup last-link @ swap next-back-link !
-        dup last-link !
-        dup caddr swap node-payload u move
-        payload-size u swap !
-        size-link @ 1+ size-link !
-      then
-    then ;m method ll!
+    size-link @ 0 = if
+      link-links% %size u + allocate throw
+      dup first-link !
+      dup last-link !
+      dup current-link !
+      dup dup next-back-link !
+      dup dup next-forward-link !
+      dup caddr swap node-payload u move
+      payload-size u swap !
+      1 size-link !
+    else
+      link-links% %size u + allocate throw
+      dup last-link @ next-forward-link !
+      dup last-link @ swap next-back-link !
+      dup last-link !
+      dup caddr swap node-payload u move
+      payload-size u swap !
+      size-link @ 1+ size-link !
+    then
+  ;m method ll!
   m: ( -- caddr u ) \ get node data from current node
     \ if there is no nodes in the linked list u will be 0 and caddr will be 0 indicating a null retrieval
-    this construct? size-link @ 0 > and
+    size-link @ 0 >
     if
       current-link @ dup node-payload swap payload-size @
     else
@@ -121,7 +104,7 @@ object class
   m: ( -- nflag ) \ step one node back from current node.
     \ nflag is true if step can not happend because at start node already or if there is no nodes in linked list to move to!
     \ nflag is false if step did happen!
-    this construct? size-link @ 0 > current-link @ first-link @ <> and and if
+    size-link @ 0 <> current-link @ first-link @ <> and if
       current-link @ next-back-link @ current-link ! false
     else
       true
@@ -129,7 +112,7 @@ object class
   m: ( -- nflag ) \ step one node forward from current node.
     \ nflag is true if step can not happen because at last node already or if there is no nodes in linked list to move to!
     \ nflag is false if step did happen!
-    this construct? size-link @ 0 > current-link @ last-link @ <> and and if
+    size-link @ 0 <> current-link @ last-link @ <> and if
       current-link @ next-forward-link @ current-link ! false
     else
       true
@@ -155,6 +138,7 @@ end-class double-linked-list
 \\\ these three slashs cause the rest of the file to be not interpreted but only works in gforth version 0.7.9 and up
 \ comment out the above line to run the following tests
 double-linked-list heap-new value lltest
+lltest destruct
 lltest print
 s" hello world" lltest ll!
 s" next line" lltest ll!
