@@ -47,7 +47,7 @@ object class
 	;m overrides construct
 end-class struct-base
 
-\ \\\ The following is an example of how to use this struct-base
+\\\ The following is an example of how to use this struct-base
 \ comment the above line to see example
 struct-base class  \ this would be the new structure to make and work with
 	protected
