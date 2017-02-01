@@ -21,9 +21,16 @@ require ./objects.fs
      selector destruct ( -- ) \ to free allocated memory in objects that use this
   end-interface destruction
 [endif]
+[ifundef] construction?
+  interface
+     selector construct? ( -- nflag ) \ method to test first execution of constructor
+  end-interface construction?
+[endif]
+
 
 object class
   destruction implementation
+  construction? implementation
   selector ll@
   cell% inst-var size-link
   cell% inst-var first-link
@@ -38,7 +45,7 @@ object class
     cell% field node-payload
   end-struct link-links%
   m: ( -- nflag ) \ nflag is true if linked list is constructed false if not constructed yet!
-    dll-test? dll-test? @ = ;m method construct?
+    dll-test? dll-test? @ = ;m overrides construct?
   public
   m: ( -- ) \ constructor
     this construct? false = if

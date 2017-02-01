@@ -19,25 +19,35 @@
 
 require ./objects.fs
 
+[ifundef] construction?
+  interface
+     selector construct? ( -- nflag ) \ method to test first execution of constructor
+  end-interface construction?
+[endif]
+
 object class
+	construction? implementation
 	protected
 	cell% inst-var size
 	cell% inst-var field-size
 	cell% inst-var place
-	cell% inst-var construct?
+	cell% inst-var struct-base?
 	m: ( uindex struct-base -- uaddr )
 		size @ * place @ +
 	;m method ::
+	m: ( -- nflag ) \ nflag is true when construct has been run for the first time false for construct never run
+		struct-base? struct-base? @ =
+	;m overrides construct?
 	public
 	m: ( ustruct-size ustruct struct-base -- )
-		construct? construct? @ = if place @ free throw	then
+		this construct? if place @ free throw	then
 		%size dup field-size ! * dup size ! allocate throw place !
-		construct? construct? !
+		struct-base? struct-base? !
 		place @ size @ erase
 	;m overrides construct
 end-class struct-base
 
-\\\ The following is an example of how to use this struct-base
+\ \\\ The following is an example of how to use this struct-base
 \ comment the above line to see example
 struct-base class  \ this would be the new structure to make and work with
 	protected
