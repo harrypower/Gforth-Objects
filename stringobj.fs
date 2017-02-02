@@ -1,4 +1,4 @@
-\    Copyright (C) 2016  Philip K. Smith
+\    Copyright (C) 2016 2017  Philip K. Smith
 \    This program is free software: you can redistribute it and/or modify
 \    it under the terms of the GNU General Public License as published by
 \    the Free Software Foundation, either version 3 of the License, or
@@ -199,7 +199,7 @@ object class
     s" iterate index:" type index @ . ;m overrides print
 end-class strings
 
-\ \\\ some test words for memory leak testing
+\\\ some test words for memory leak testing
 \ comment out the above three slashs to run the below tests
 0 value testing
 0 value testb
