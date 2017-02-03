@@ -28,13 +28,17 @@ object class
   m: ( caddr u svgmaker -- ) \ append string into svg-output string
     svg-output @ [bind] string !+$ ;m method !svg$
 
+  m: ( n svgmaker -- c-addr u1 ) \ convert n to string
+      s>d swap over dabs <<# #s rot sign #> #>> ;m method #to$
+
   m: ( nstrings svgmaker -- ) \ place contents of nstrings into svg string as attribute propertys
     dup [bind] strings $qty 0 ?do
     dup [bind] strings @$x this [current] !svg$ s"  " this [current] !svg$
     loop drop ;m method svgattr
 
   m: ( n svgmaker -- ) \ convert n to string and send string to !svg$ method
-    s>d swap over dabs <<# #s rot sign #> #>>
+    \ s>d swap over dabs <<# #s rot sign #> #>>
+    this [current] #to$
     this [current] !svg$ ;m method #tosvg$
 
   public

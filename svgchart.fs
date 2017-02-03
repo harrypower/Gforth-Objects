@@ -25,17 +25,14 @@ require ./objects.fs
 require ./svgmaker.fs
 require ./stringobj.fs
 
-string heap-new constant mytemppad$  \ global string for converting numbers to strings
-: #to$ ( n -- c-addr u1 ) \ convert n to string
-    s>d swap over dabs <<# #s rot sign #> #>> mytemppad$ !$ mytemppad$ @$ ;
-
 create floatoutputbuffer 10 allot \ memory buffer for converting floating to string
 : nd>fto$ ( f: r -- ) ( nd -- caddr u ) \ convert r from float stack to string with nd digits after deciaml
     floatoutputbuffer 10 rot 0 f>buf-rdp floatoutputbuffer 10 ;
 
 svgmaker class
   destruction implementation
-  cell% inst-var svgchartmaker-test \ used to see if construct is first being executed or not
+  protected
+\  cell% inst-var svgchartmaker-test \ used to see if construct is first being executed or not
   \ these variables and values are calcuated or used in the following code
   cell% inst-var mymin      \ will contain the chart data min absolute value
   cell% inst-var mymax      \ will contain the chart data max absolute value
@@ -93,7 +90,6 @@ svgmaker class
   inst-value index-text \ text index
   inst-value addr-text  \ address of text structure
 
-  protected
   m: ( -- ) \ this will free text and data strings and string that was dynamicaly created in object
     index-data 0 ?do
       addr-data data% %size i * + dup
@@ -116,44 +112,24 @@ svgmaker class
 
   public
   m: ( svgchart -- ) \ constructor to set some defaults
+    \ note destruct should be called to deallocate memory before construct is called because memory leaks will occour
   	this [parent] construct
-  	svgchartmaker-test svgchartmaker-test @ =
-  	if
-      working$    [bind] string construct
-      lableref$   [bind] string construct
-      lablemark$  [bind] string construct
-      ytransform$ [bind] string construct
-
-      working$s   [bind] strings construct
-      pathdata$   [bind] strings construct
-      xlabdata$   [bind] strings construct
-      xlab-attr$  [bind] strings construct
-      ylab-attr$  [bind] strings construct
-      labline-attr$ [bind] strings construct
-      ytempattr$s [bind] strings construct
-      xtempattr$s [bind] strings construct
-      this [current] free-text-data
-  	else
-	    \ dynamicaly created objects
-	    string  heap-new [to-inst] working$
-	    string  heap-new [to-inst] lableref$
-	    string  heap-new [to-inst] lablemark$
-	    string  heap-new [to-inst] ytransform$
-
-	    strings heap-new [to-inst] working$s
-	    strings heap-new [to-inst] pathdata$
-	    strings heap-new [to-inst] xlabdata$
-	    strings heap-new [to-inst] xlab-attr$
-	    strings heap-new [to-inst] ylab-attr$
-	    strings heap-new [to-inst] labline-attr$
-	    strings heap-new [to-inst] ytempattr$s
-	    strings heap-new [to-inst] xtempattr$s
-	    0 [to-inst] index-data
-	    0 [to-inst] addr-data
-	    0 [to-inst] index-text
-	    0 [to-inst] addr-text
-	    svgchartmaker-test svgchartmaker-test ! \ set flag for first time svgmaker object constructed
-  	then
+    string  heap-new [to-inst] working$
+    string  heap-new [to-inst] lableref$
+    string  heap-new [to-inst] lablemark$
+    string  heap-new [to-inst] ytransform$
+    strings heap-new [to-inst] working$s
+    strings heap-new [to-inst] pathdata$
+    strings heap-new [to-inst] xlabdata$
+    strings heap-new [to-inst] xlab-attr$
+    strings heap-new [to-inst] ylab-attr$
+    strings heap-new [to-inst] labline-attr$
+    strings heap-new [to-inst] ytempattr$s
+    strings heap-new [to-inst] xtempattr$s
+    0 [to-inst] index-data
+    0 [to-inst] addr-data
+    0 [to-inst] index-text
+    0 [to-inst] addr-text
   	0.0e mymin sf!
   	0.0e mymax sf!
   	0.0e myspread sf!
@@ -178,24 +154,21 @@ svgmaker class
   ;m overrides construct
 
   m: ( svgchart -- ) \ destruct all allocated memory and free this object
-  	svgchartmaker-test svgchartmaker-test @ =
-  	if
-	    working$      dup [bind] string destruct free throw
-	    lableref$     dup [bind] string destruct free throw
-	    lablemark$    dup [bind] string destruct free throw
-	    ytransform$   dup [bind] string destruct free throw
-	    working$s     dup [bind] strings destruct free throw
-	    pathdata$     dup [bind] strings destruct free throw
-	    xlabdata$     dup [bind] strings destruct free throw
-	    xlab-attr$    dup [bind] strings destruct free throw
-	    ylab-attr$    dup [bind] strings destruct free throw
-	    labline-attr$ dup [bind] strings destruct free throw
-	    ytempattr$s   dup [bind] strings destruct free throw
-	    xtempattr$s   dup [bind] strings destruct free throw
-	    this [current] free-text-data
-	    this [parent] destruct
-	    0 svgchartmaker-test !
-    then ;m overrides destruct
+    working$      dup [bind] string destruct free throw
+    lableref$     dup [bind] string destruct free throw
+    lablemark$    dup [bind] string destruct free throw
+    ytransform$   dup [bind] string destruct free throw
+    working$s     dup [bind] strings destruct free throw
+    pathdata$     dup [bind] strings destruct free throw
+    xlabdata$     dup [bind] strings destruct free throw
+    xlab-attr$    dup [bind] strings destruct free throw
+    ylab-attr$    dup [bind] strings destruct free throw
+    labline-attr$ dup [bind] strings destruct free throw
+    ytempattr$s   dup [bind] strings destruct free throw
+    xtempattr$s   dup [bind] strings destruct free throw
+    this [current] free-text-data
+    this [parent] destruct
+  ;m overrides destruct
 
   m: ( nxmaxpoints nxmaxchart nymaxchart -- ) \ values to change chart size and charting data use
   	\ nmaxpoints forces data points to be used up to this limit
@@ -268,7 +241,6 @@ svgmaker class
   	text-y @ swap
   	text-attr$ @ ;m method ntext@
 
-  protected
   m: ( nxdata$ svgchart -- )  \ finds the min and max values of the localdata strings
   	\ note results stored in mymax and mymin float variables
   	{ xdata$ }
@@ -279,16 +251,16 @@ svgmaker class
   m: ( svgchart -- ) \ will produce the svg header for this chart
   	working$s [bind] strings construct
   	s\" width=" working$ [bind] string !$ s\" \"" working$ [bind] string !+$
-  	xmaxchart xlablesize + #to$ working$ [bind] string !+$ s\" \"" working$ [bind] string !+$
+  	xmaxchart xlablesize + this #to$ working$ [bind] string !+$ s\" \"" working$ [bind] string !+$
   	working$ [bind] string @$ working$s [bind] strings !$x
 
   	s\" height=" working$ [bind] string !$ s\" \"" working$ [bind] string !+$
-  	ymaxchart ylablesize + ytoplablesize + #to$ working$ [bind] string !+$ s\" \"" working$ [bind] string !+$
+  	ymaxchart ylablesize + ytoplablesize + this #to$ working$ [bind] string !+$ s\" \"" working$ [bind] string !+$
   	working$ [bind] string @$ working$s [bind] strings !$x
 
   	s\" viewBox=" working$ [bind] string !$ s\" \"0 0 " working$ [bind] string !+$
-  	xmaxchart xlablesize + #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
-  	ymaxchart ylablesize + ytoplablesize + #to$ working$ [bind] string !+$ s\" \"" working$ [bind] string !+$
+  	xmaxchart xlablesize + this #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
+  	ymaxchart ylablesize + ytoplablesize + this #to$ working$ [bind] string !+$ s\" \"" working$ [bind] string !+$
   	working$ [bind] string @$ working$s [bind] strings !$x
 
   	working$s this [parent] svgheader ;m method makeheader
@@ -315,51 +287,51 @@ svgmaker class
   	{ xdata$ }
   	xdata$ [bind] strings reset
   	pathdata$ [bind] strings construct
-  	s" M " working$ [bind] string !$ xlablesize #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
+  	s" M " working$ [bind] string !$ xlablesize this #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
   	xdata$ [bind] strings @$x >float
   	if
 	    yscale sf@ f*
   	else \ if fist string is not a number just plot with mymin value
 	    mymin sf@ yscale sf@ f*
   	then
-  	mymax sf@ yscale sf@ f* fswap f- f>s ytoplablesize + #to$ working$ [bind] string !+$
+  	mymax sf@ yscale sf@ f* fswap f- f>s ytoplablesize + this #to$ working$ [bind] string !+$
   	working$ [bind] string @$ pathdata$ [bind] strings !$x
   	xdata$ $qty xmaxpoints min 1
   	?do
 	    s" L " working$ [bind] string !$
-	    i s>f xstep sf@ f* f>s xlablesize + #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
+	    i s>f xstep sf@ f* f>s xlablesize + this #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
 	    xdata$ [bind] strings @$x >float
 	    if
     		yscale sf@ f*
 	    else \ if string is not a number just plot with mymin value
     		mymin sf@ yscale sf@ f*
 	    then
-	    mymax sf@ yscale sf@ f* fswap f- f>s ytoplablesize + #to$ working$ [bind] string !+$
+	    mymax sf@ yscale sf@ f* fswap f- f>s ytoplablesize + this #to$ working$ [bind] string !+$
 	    working$ [bind] string @$ pathdata$ [bind] strings !$x
   	loop ;m method makepath
 
   m: ( svgchart -- ) \ will make the chart lables both lines and text
   	pathdata$ [bind] strings construct
   	\ make the ylable line
-  	s" M " working$ [bind] string !$ xlablesize xlableoffset - #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
-  	ytoplablesize #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
+  	s" M " working$ [bind] string !$ xlablesize xlableoffset - this #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
+  	ytoplablesize this #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
   	working$ [bind] string @$ 2dup lableref$ [bind] string !$ pathdata$ [bind] strings !$x
-  	s" L " working$ [bind] string !$ xlablesize xlableoffset - #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
-  	ymaxchart ytoplablesize + ylableoffset + #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
+  	s" L " working$ [bind] string !$ xlablesize xlableoffset - this #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
+  	ymaxchart ytoplablesize + ylableoffset + this #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
   	working$ [bind] string @$ pathdata$ [bind] strings !$x
   	\ make the xlable line
-  	s" L " working$ [bind] string !$ xmaxchart xlablesize + #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
-  	ymaxchart ytoplablesize + ylableoffset + #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
+  	s" L " working$ [bind] string !$ xmaxchart xlablesize + this #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
+  	ymaxchart ytoplablesize + ylableoffset + this #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
   	working$ [bind] string @$ pathdata$ [bind] strings !$x
   	\ make ylable line marks
   	lableref$ [bind] string @$ pathdata$ [bind] strings !$x
-  	s" l " working$ [bind] string !$ ymarksize -1 * #to$ working$ [bind] string !+$
-  	s"  " working$ [bind] string !+$ 0 #to$ working$ [bind] string !+$
+  	s" l " working$ [bind] string !$ ymarksize -1 * this #to$ working$ [bind] string !+$
+  	s"  " working$ [bind] string !+$ 0 this #to$ working$ [bind] string !+$
   	working$ [bind] string @$ 2dup lablemark$ [bind] string !$ pathdata$ [bind] strings !$x
   	ylableqty 1 + 1 ?do
 	    lableref$ [bind] string @$ pathdata$ [bind] strings !$x
-	    s" m " working$ [bind] string !$ 0 #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
-	    ymaxchart s>f ylableqty s>f f/ i s>f f* f>s #to$ working$ [bind] string !+$
+	    s" m " working$ [bind] string !$ 0 this #to$ working$ [bind] string !+$ s"  " working$ [bind] string !+$
+	    ymaxchart s>f ylableqty s>f f/ i s>f f* f>s this #to$ working$ [bind] string !+$
 	    working$ [bind] string @$ pathdata$ [bind] strings !$x
 	    lablemark$ [bind] string @$ pathdata$ [bind] strings !$x
   	loop
@@ -371,8 +343,8 @@ svgmaker class
 	    ylabletxtpos ytoplablesize
 	    yscale sf@ myspread sf@ ylableqty s>f f/ f* i s>f f* f>s + ( nx ny )
 	    \ add transformation for ylable rotation
-	    s\"  transform=\"rotate(" ytransform$ [bind] string !$ ylablerot #to$ ytransform$ [bind] string !+$ s" , " ytransform$ [bind] string !+$
-	    swap dup #to$ ytransform$ [bind] string !+$ s" , " ytransform$ [bind] string !+$ swap dup #to$ ytransform$ [bind] string !+$
+	    s\"  transform=\"rotate(" ytransform$ [bind] string !$ ylablerot this #to$ ytransform$ [bind] string !+$ s" , " ytransform$ [bind] string !+$
+	    swap dup this #to$ ytransform$ [bind] string !+$ s" , " ytransform$ [bind] string !+$ swap dup this #to$ ytransform$ [bind] string !+$
 	    s"  " ytransform$ [bind] string !+$ s\" )\"" ytransform$ [bind] string !+$
 	    ytransform$ [bind] string @$ ytempattr$s [bind] strings !$x ytempattr$s -rot
 	    myspread sf@ ylableqty s>f f/ i s>f f* mymax sf@ fswap f- ylable#dec nd>fto$ ytransform$ [bind] string !$ ytransform$
@@ -383,8 +355,8 @@ svgmaker class
       xtempattr$s [bind] strings construct
       xlab-attr$ xtempattr$s [bind] strings copy$s
       xlablesize xmaxchart s>f xlabdata$ [bind] strings $qty s>f f/ i s>f f* f>s + ylableoffset ymaxchart + ytoplablesize + ylabletextoff +
-      s\"  transform=\"rotate(" working$ [bind] string !$ xlablerot #to$ working$ [bind] string !+$ s" , " working$ [bind] string !+$
-      swap dup #to$ working$ [bind] string !+$ s" , " working$ [bind] string !+$ swap dup #to$
+      s\"  transform=\"rotate(" working$ [bind] string !$ xlablerot this #to$ working$ [bind] string !+$ s" , " working$ [bind] string !+$
+      swap dup this #to$ working$ [bind] string !+$ s" , " working$ [bind] string !+$ swap dup this #to$
       working$ [bind] string !+$ s"  " working$ [bind] string !+$
       s\" )\"" working$ [bind] string !+$ working$ [bind] string @$ xtempattr$s [bind] strings !$x xtempattr$s -rot xlabdata$
       this [parent] svgtext
@@ -479,7 +451,7 @@ svgmaker class
 
 end-class svgchartmaker
 
-\ \\\ This three slash word only works in gforth 0.7.9 and higher!  Simply will not interpret rest of file from here on!
+\\\ This three slash word only works in gforth 0.7.9 and higher!  Simply will not interpret rest of file from here on!
 \ uncomment the line above to generate the svg string this example creates
 
 svgchartmaker heap-new value test
