@@ -16,6 +16,7 @@
 
 \ The code makes an object using object.fs to create and work with SVG
 \ output for using in a web server for example!
+\ See example at end of document!
 
 require ./objects.fs
 require ./stringobj.fs  \ this is my own string package for single strings and array of strings
@@ -86,7 +87,7 @@ object class
   svg-output @ [bind] string @$ ;m overrides print
 end-class svgmaker
 
-\ \\\ comment out these three slashs to use the example below
+\\\ comment out these three slashs to use the example below
 strings heap-new constant head1
 strings heap-new constant attr1
 strings heap-new constant path1
