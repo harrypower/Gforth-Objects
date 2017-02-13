@@ -20,7 +20,8 @@ This is a basic double linked list object that can take a payload of memory.  Th
 is allocated on the heap.  Inherit this object to add more methods or just use it to store some dynamic sized memory items!
 Stringobj.fs does not use this at this moment but i may convert strings to use this link list in the future!
 
-## object-struct-helper.fs
-This is an object to make working with structures easier!  
-The object is called struct-base and all it does is allocate memory at time of creation with construct member
-The idea is to inherit from this class to make a specific structure with the retrieve and store words for the specific structure.
+## svgmaker.fs
+This is an object that helps making svg strings.  It uses stringobj.fs and objects.fs.  There is an example at the bottom of file.
+
+## svgchart.fs
+This is an object that makes an svg chart if given correct string data and attribute data!  This object uses objecs.fs, svgmaker.fs, stringobj.fs.  There is an example at the end of the file!
