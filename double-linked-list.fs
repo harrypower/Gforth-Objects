@@ -37,13 +37,13 @@ object class
     cell% field node-payload
   end-struct link-links%
   public
-  m: ( -- ) \ constructor Note using this member will leak memory.. use destruct to deallocate memory
+  m: ( double-linked-list -- ) \ constructor Note using this member will leak memory.. use destruct to deallocate memory
       0 size-link !
       0 first-link !
       0 last-link !
       0 current-link !
   ;m overrides construct
-  m: ( -- ) \ destructor
+  m: ( double-linked-list -- ) \ destructor
     first-link @ 0 <> size-link @ 0 <> and if
       first-link @ current-link !
       size-link @ 0 ?do
@@ -56,7 +56,7 @@ object class
       0 last-link !
       0 current-link !
     then ;m overrides destruct
-  m: ( -- ) \ print info
+  m: ( double-linked-list -- ) \ print info
     cr size-link @ u. ." link list size" cr
     first-link @ u. ." start node's address" cr
     last-link @ u. ." the last node's address" cr
@@ -68,7 +68,8 @@ object class
       ." current node data dump:" cr
       this ll@ dump cr
     then ;m overrides print
-  m: { caddr u -- } \ add to link list a node at the end and update all the link list node data
+  m: ( caddr u double-linked-list -- )
+    { caddr u -- } \ add to link list a node at the end and update all the link list node data
     \ caddr  is address of data to add to this node
     \ u is the quantity of bytes to add to this node
     size-link @ 0 = if
@@ -91,7 +92,7 @@ object class
       size-link @ 1+ size-link !
     then
   ;m method ll!
-  m: ( -- caddr u ) \ get node data from current node
+  m: ( double-linked-list -- caddr u ) \ get node data from current node
     \ if there is no nodes in the linked list u will be 0 and caddr will be 0 indicating a null retrieval
     size-link @ 0 >
     if
@@ -99,9 +100,9 @@ object class
     else
       0 0 \ return null data if there are no nodes in this linked list
     then ;m overrides ll@
-  m: ( -- u ) \ get linked list node size
+  m: ( double-linked-list -- u ) \ get linked list node size
     size-link @ ;m method ll-size@
-  m: ( -- nflag ) \ step one node back from current node.
+  m: ( double-linked-list -- nflag ) \ step one node back from current node.
     \ nflag is true if step can not happend because at start node already or if there is no nodes in linked list to move to!
     \ nflag is false if step did happen!
     size-link @ 0 <> current-link @ first-link @ <> and if
@@ -109,7 +110,7 @@ object class
     else
       true
     then ;m method ll<
-  m: ( -- nflag ) \ step one node forward from current node.
+  m: ( double-linked-list -- nflag ) \ step one node forward from current node.
     \ nflag is true if step can not happen because at last node already or if there is no nodes in linked list to move to!
     \ nflag is false if step did happen!
     size-link @ 0 <> current-link @ last-link @ <> and if
@@ -117,22 +118,41 @@ object class
     else
       true
     then ;m method ll>
-  m: ( -- caddr u nflag ) \ get node payload and step to next node
+  m: ( double-linked-list -- caddr u nflag ) \ get node payload and step to next node
     \ nflag is true if step can not happen because at last node already or if there is no nodes in linked list to step to!
     \ nflag is false if step did happen
     \ caddr and u will will be the node payload before the step if there are any linked list nodes
     \ if there are no linked list nodes caddr and u will both be 0
     this ll@ this ll> ;m method ll@>
-  m: ( -- caddr u nflag ) \ get node payload and step to next node
+  m: ( double-linked-list -- caddr u nflag ) \ get node payload and step to next node
     \ nflag is true if step can not happen because at first node already or if there is no nodes in linked list to step to!
     \ nflag is false if step did happen
     \ caddr and u will will be the node payload before the step if there are any linked list nodes
     \ if there are no linked list nodes caddr and u will both be 0
     this ll@ this ll< ;m method ll@<
-  m: ( -- ) \ set link list retrieve to the start of this linked list
+  m: ( double-linked-list -- ) \ set link list retrieve to the start of this linked list
     first-link @ current-link ! ;m method ll-set-start
-  m: ( -- ) \ set link list retrieve to the end of this linked list
+  m: ( double-linked-list -- ) \ set link list retrieve to the end of this linked list
     last-link @ current-link ! ;m method ll-set-end
+  m: ( double-linked-list -- ) \ delete last item in list
+    size-link @ 0<> if
+      size-link @ 1 = if
+        this destruct
+      else
+        \ place here the delete last item code
+      then
+    then ;m method delete-last
+  m: ( double-linked-list -- ) \ delete first item in list
+    size-link @ 0<> if
+      size-link @ 1 = if
+        this destruct
+      else
+        \ place here the delete first item code
+      then
+    then ;m method delete-last
+  m: ( unindex double-linked-list -- ) \ delete uindex item in list
+
+  ;m method delete-n-item 
 end-class double-linked-list
 
 \\\ these three slashs cause the rest of the file to be not interpreted but only works in gforth version 0.7.9 and up
