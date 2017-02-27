@@ -139,7 +139,12 @@ object class
       size-link @ 1 = if
         this destruct
       else
-        \ place here the delete last item code
+        last-link @ dup
+        next-back-link @ last-link !
+        free throw
+        last-link @ dup next-forward-link !
+        size-link @ 1 - size-link !
+        this ll-set-start
       then
     then ;m method delete-last
   m: ( double-linked-list -- ) \ delete first item in list
@@ -147,13 +152,71 @@ object class
       size-link @ 1 = if
         this destruct
       else
-        \ place here the delete first item code
+        first-link @ dup
+        next-forward-link @ first-link !
+        free throw
+        first-link @ dup next-back-link !
+        size-link @ 1 - size-link !
+        this ll-set-start
       then
-    then ;m method delete-last
-  m: ( unindex double-linked-list -- ) \ delete uindex item in list
-
-  ;m method delete-n-item 
+    then ;m method delete-first
+  m: ( uindex double-linked-list -- ) \ delete uindex item in list
+    { uindex }
+    size-link @ 0<> if
+      uindex 0>= if
+        uindex size-link @ < if
+          size-link @ 1 = if
+            this destruct
+          else
+            uindex 0 = if
+              this delete-first
+            else
+              uindex size-link @ 1 - = if
+                this delete-last
+              else
+                \ place n delete code here
+                this ll-set-start
+                uindex 0 ?do this ll> drop loop
+                current-link @ dup dup
+                next-forward-link @
+                swap next-back-link @ \ orgl forwl backl
+                2dup next-forward-link !
+                swap next-back-link !
+                free throw
+                size-link @ 1 - size-link !
+                this ll-set-start
+              then
+            then
+          then
+        then
+      then
+    then ;m method delete-n-item
+  m: ( uindex double-linked-list -- caddr u ) \ retrieve uindex link list payload
+  ;m method nll@
 end-class double-linked-list
+
+\ \\\
+double-linked-list heap-new value deltest
+s" one" deltest ll!
+s" two" deltest ll!
+s" three" deltest ll!
+
+deltest print cr
+deltest delete-last
+deltest print cr
+s" three" deltest ll!
+deltest print cr
+deltest delete-first
+deltest print cr
+s" four" deltest ll!
+deltest print cr
+1 deltest delete-n-item
+deltest print cr
+s" five" deltest ll!
+deltest print cr
+0 deltest delete-n-item
+deltest print cr
+
 
 \\\ these three slashs cause the rest of the file to be not interpreted but only works in gforth version 0.7.9 and up
 \ comment out the above line to run the following tests
