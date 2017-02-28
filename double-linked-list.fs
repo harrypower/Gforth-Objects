@@ -84,9 +84,10 @@ object class
       1 size-link !
     else
       link-links% %size u + allocate throw
-      dup last-link @ next-forward-link !
-      dup last-link @ swap next-back-link !
+      dup last-link @ next-forward-link ! \ setting nfl of old last link
+      dup last-link @ swap next-back-link ! \ setting nbl of new last link
       dup last-link !
+      dup last-link @ swap next-forward-link ! \ setting nfl of new last-link
       dup caddr swap node-payload u move
       payload-size u swap !
       size-link @ 1+ size-link !
@@ -192,55 +193,54 @@ object class
       then
     then ;m method delete-n-item
   m: ( uindex double-linked-list -- caddr u ) \ retrieve uindex link list payload
-  ;m method nll@
+    this ll-set-start
+    0 ?do this ll> drop loop
+    this ll@ ;m method nll@
+  m: ( uindex double-linked-list -- ) \ testing ... see link data internal addresses
+    this ll-set-start
+    0 ?do this ll> drop loop
+    current-link @ . ." current-link data" cr
+    current-link @ next-forward-link @ . ." next-forward-link" cr
+    current-link @ next-back-link @ . ." next-back-link" cr
+    current-link @ payload-size @ . ." payload-size" cr
+    current-link @ node-payload @ . ." node-payload" cr
+    this ll@ dump cr
+  ;m method seedata
 end-class double-linked-list
 
-\ \\\
-double-linked-list heap-new value deltest
-s" one" deltest ll!
-s" two" deltest ll!
-s" three" deltest ll!
+\\\
+double-linked-list heap-new value fulltest
+s" one" fulltest ll!
+s" two" fulltest ll!
+s" three" fulltest ll!
+s" four" fulltest ll!
+s" five" fulltest ll!
+cr
+: verify ( -- )
+fulltest ll-size@ 0 ?do i fulltest seedata loop
+fulltest print cr ;
 
-deltest print cr
-deltest delete-last
-deltest print cr
-s" three" deltest ll!
-deltest print cr
-deltest delete-first
-deltest print cr
-s" four" deltest ll!
-deltest print cr
-1 deltest delete-n-item
-deltest print cr
-s" five" deltest ll!
-deltest print cr
-0 deltest delete-n-item
-deltest print cr
-
-
-\\\ these three slashs cause the rest of the file to be not interpreted but only works in gforth version 0.7.9 and up
-\ comment out the above line to run the following tests
-double-linked-list heap-new value lltest
-lltest destruct
-lltest print
-s" hello world" lltest ll!
-s" next line" lltest ll!
-s" line 3" lltest ll!
-s" the last stuff in this list" lltest ll!
-lltest print
-lltest ll@> . cr type cr
-lltest ll@> . cr type cr
-lltest ll@> . cr type cr
-lltest ll@> . cr type cr
-lltest ll@< . cr type cr
-lltest ll@  type cr
-lltest ll-size@ . cr
-lltest ll-set-end
-lltest ll@ type cr
-lltest ll-set-start
-lltest ll@ type cr
-lltest ll> throw lltest ll> throw
-lltest ll@ type cr
-lltest print
-lltest destruct
-lltest print
+verify
+cr ." set one done!" cr
+fulltest delete-first
+verify
+cr ." set two done!" cr
+fulltest delete-last
+verify
+cr ." set three done!" cr
+1 fulltest delete-n-item
+verify
+cr ." set four done!" cr
+fulltest ll-set-start
+s" six" fulltest ll!
+s" seven" fulltest ll!
+fulltest ll@> . cr type cr
+fulltest ll@> . cr type cr
+fulltest ll@< . cr type cr
+fulltest ll@ type cr
+fulltest ll-size@ . ." size" cr
+fulltest ll-set-end
+fulltest ll@ type cr
+fulltest print cr
+fulltest destruct
+fulltest print cr
