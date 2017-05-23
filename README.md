@@ -25,3 +25,6 @@ This is an object that helps making svg strings.  It uses stringobj.fs and objec
 
 ## svgchart.fs
 This is an object that makes an svg chart if given correct string data and attribute data!  This object uses objecs.fs, svgmaker.fs, stringobj.fs.  There is an example at the end of the file!
+
+## mdca-obj.fs
+This is a multidimensional cell array.  If you need to make an array of a fixed size that holds a cell at each address this is the object to use.  Simple to use with some test code at end of file that should be an example of usage.
