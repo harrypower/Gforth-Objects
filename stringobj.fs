@@ -157,7 +157,7 @@ object class
   \ caddr1 u1 is the string found before caddr u and could be a zero size string
   \ caddr1 u1 will be a zero size string if caddr u is not found
   \ caddr2 u2 contains the left over string if caddr u string is found and removed or it will simply be the full string from this string object array
-    qty @ 0>
+    dup 0> qty @ 0> and true =
     if
        array @ index @ cell * + @ [bind] string split$ drop
        index @ 1+ index !
@@ -202,13 +202,13 @@ object class
 end-class strings
 \ ***************************************************************************************************************************
 
-\\\
+\ \\\
 string heap-new constant test$a
 string heap-new constant test$b
 strings heap-new constant test$s
 
 s" x" test$a !$
-s" xx1x2x" test$b !$
+s" x1x2x" test$b !$
 
 test$a test$b test$s split$to$s
 cr
@@ -232,7 +232,7 @@ test$s @$x .s dump
 
 test$s bind strings destruct
 cr
-s" 12" test$s !$x
+s" 1x2" test$s !$x
 s" x" test$s split$s .s cr
 dump
 dump
