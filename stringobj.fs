@@ -202,7 +202,7 @@ object class
 end-class strings
 \ ***************************************************************************************************************************
 
-\ \\\
+\\\
 string heap-new constant test$a
 string heap-new constant test$b
 strings heap-new constant test$s
