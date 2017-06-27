@@ -152,10 +152,11 @@ object class
        array @ swap cell * + @ [bind] string @$ false
     else drop 0 0 true
     then ;m method []@$
-  m: ( caddr u strings -- caddr1 u1 caddr2 u2 ) \ retrieve string from array at next index then
-  \ split that next string at caddr u if possible
-  \ caddr1 u1 is empty if caddr u string is not found
-  \ caddr2 u2 contains the left over string if caddr u string is found
+  m: ( caddr u strings -- caddr1 u1 caddr2 u2 ) \ retrieve string from this strings object array at next index then
+  \ split that next string at caddr u if possible and removing caddr u in the process
+  \ caddr1 u1 is the string found before caddr u and could be a zero size string
+  \ caddr1 u1 will be a zero size string if caddr u is not found
+  \ caddr2 u2 contains the left over string if caddr u string is found and removed or it will simply be the full string from this string object array
     qty @ 0>
     if
        array @ index @ cell * + @ [bind] string split$ drop
@@ -228,3 +229,10 @@ test$s @$x .s dump
 test$s @$x .s dump
 test$s @$x .s dump
 test$s @$x .s dump
+
+test$s bind strings destruct
+cr
+s" 12" test$s !$x
+s" x" test$s split$s .s cr
+dump
+dump
