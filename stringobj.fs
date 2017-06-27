@@ -48,7 +48,7 @@ object class
       then
       caddr1 string-addr !
       u string-size !
-    else 2drop then ;m method !$
+    else 2drop this destruct then ;m method !$
   m: ( string -- caddr u ) \ retrieve string
     string-addr @ 0>
     if
