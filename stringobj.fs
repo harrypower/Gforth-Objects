@@ -48,7 +48,7 @@ object class
       then
       caddr1 string-addr !
       u string-size !
-    else 2drop this destruct then ;m method !$
+    else 2drop this [current] destruct then ;m method !$
   m: ( string -- caddr u ) \ retrieve string
     string-addr @ 0>
     if
@@ -82,13 +82,13 @@ object class
     else \ make new string
        this [current] !$
     then ;m method !<+$
-  m: ( caddr u string -- caddr1 u1 caddr2 u2 nflag ) \ split the stored string at caddr u if found
-  \ caddr u will be removed and caddr1 u1 will be split string before caddr u
-  \ caddr2 u2 will be the split string after caddr u
-  \ if no match found caddr1 u1 returns and empty string and caddr2 u2 contains the this objects string
-  \ nflag is true if string is split and returned false if this objects string is returned
+  m: ( caddr u string -- caddr1 u1 caddr2 u2 nflag ) \ split this string object stored string by caddr u if caddr u is found in stored string
+  \ caddr1 u1 will be the split string before caddr u if caddr u is found in stored string
+  \ caddr2 u2 will be the split string after caddr u if caddr us is found in stored string
+  \ if no match found caddr1 u1 returns an empty string and caddr2 u2 contains this objects string
+  \ nflag is true if string is split and false if this objects string is returned without being split
   \ Note the returned strings are valid until a new string is placed in this string object
-  \ This string object does not get changed in any way after this operation!
+  \ This string object does not get changed in any way because of this operation!
   	{ caddr u }
   	string-addr @ string-size @ caddr u search true =
   	if
@@ -166,20 +166,21 @@ object class
   m: ( nstring-split$ nstring-source$ strings -- ) \ split up nstring-source$ with nstring-split$
   \ nstring-source$ is split each time nstring-split$ is found and placed in this strings
   \ nstring-split$ is removed each time it is found and when no more are found process is done
-  \ Note nstring-source$ string will contain the left over part after last split
-  \ include this string into this strings or add nstring-split$ contents to the source$ before splitting
+  \ Note nstring-source$ string will contain the last split string but that string it is also placed in this strings object
+  \ Note null strings or strings of zero size could be found and placed in this strings object during spliting process
     { sp$ src$ }
     sp$ [bind] string len$ 0> src$ [bind] string len$ 0> and true =
     if
        begin
           sp$ [bind] string @$ src$ [bind] string split$ true =
-          if 2swap this [current] !$x src$ [bind] string !$ false else 2drop 2drop true then
+          if 2swap this [current] !$x src$ [bind] string !$ false else this [current] !$x 2drop true then
        until
     then ;m method split$to$s
   m: ( ncaddrfd u ncaddrsrc u1 strings -- ) \ split up ncaddrsrc u1 string with ncaddrfd u string
   \ same as split$to$s method but temporary strings are passed to this code
   \ ncaddrfd u is the string to find
   \ ncaddrsrc u1 is the string to find ncaddrfd u string in
+  \ Note null strings or strings of zero size could be found and placed in this strings object during spliting process
   	string heap-new string heap-new { fd$ src$ }
   	src$ [bind] string !$ fd$ [bind] string !$
   	fd$ src$ this [current] split$to$s
@@ -198,48 +199,32 @@ object class
     s" size:" type qty @ .
     s" iterate index:" type index @ . ;m overrides print
 end-class strings
+\ ***************************************************************************************************************************
 
-\\\ some test words for memory leak testing
-\ comment out the above three slashs to run the below tests
-0 value testing
-0 value testb
-: stringtest
-   string heap-new to testing
-   string heap-new to testb
-   testing print cr
-   testb print cr
-   s" somestring !" testing [bind] string !$
-   testing [bind] string @$ type cr
-   s"  other string!" testing [bind] string !+$
-   testing [bind] string @$ type cr
-   s" just this string!" testing !$
-   testing [bind] string @$ type cr
-   testing [bind] string destruct testing free throw 0 to testing
-   testb [bind] string destruct testb free throw 0 to testb ;
+\\\
+string heap-new constant test$a
+string heap-new constant test$b
+strings heap-new constant test$s
 
-: dotesting
-   1000 0 ?do stringtest loop ;
+s" x" test$a !$
+s" xx1x2x" test$b !$
 
-0 value testc
-: stringstest
-   strings heap-new to testc
-   s" hello world" testc [bind] strings !$x
-   s" next string" testc [bind] strings !$x
-   s" this is 2 or third item" testc [bind] strings !$x
-   testc print cr
-   testc [bind] strings $qty . cr
-   testc [bind] strings @$x type cr
-   testc [bind] strings @$x type cr
-   testc [bind] strings @$x type cr
-   testc [bind] strings destruct
-   testc free throw 0 to testc  ;
-
-0 value testa
-: zerotest
-   string heap-new to testa
-   s" " testa !$
-   testa @$ .s cr ;
-
-: testall
-   1000 0 ?do ." stringtest" cr stringtest ." stringstest" cr stringstest loop
-   zerotest 2drop  ;
+test$a test$b test$s split$to$s
+cr
+test$s $qty . cr
+test$s @$x .s dump
+test$s @$x .s dump
+test$s @$x .s dump
+test$s @$x .s dump
+test$s @$x .s dump
+cr
+test$b @$ .s  dump
+cr
+test$s bind strings destruct
+s" x" s" xx1x2x" test$s split$>$s
+test$s $qty . cr
+test$s @$x .s dump
+test$s @$x .s dump
+test$s @$x .s dump
+test$s @$x .s dump
+test$s @$x .s dump
