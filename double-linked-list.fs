@@ -29,6 +29,7 @@ object class
   cell% inst-var first-link
   cell% inst-var last-link
   cell% inst-var current-link
+  cell% inst-var cell-buffer
   protected
   struct
     cell% field next-forward-link
@@ -206,8 +207,22 @@ object class
     current-link @ node-payload @ . ." node-payload" cr
     this ll@ dump cr
   ;m method seedata
+  m: ( nnumber double-linked-list -- ) \ store nnumber as next linked item
+    cell-buffer !
+    cell-buffer cell this ll! ;m method ll-cell!
+  m: ( double-linked-list -- nnumber ) \ retrieve nnumber from linked list at next location
+    this ll@ drop
+    cell-buffer cell move
+    cell-buffer @ ;m method ll-cell@
+  m: ( uindex double-linked-list -- nnumber ) \ retrieve nnumber from linked list at uindex location if it exists
+      \ note nnumber will be the last number in the linked list if uindex exceeds size if this linked list
+    this nll@ drop
+    cell-buffer cell move
+    cell-buffer @
+  ;m method nll-cell@
 end-class double-linked-list
 
+\ *************************************************************************************************************************
 \\\
 double-linked-list heap-new value fulltest
 s" one" fulltest ll!
@@ -244,3 +259,19 @@ fulltest ll@ type cr
 fulltest print cr
 fulltest destruct
 fulltest print cr
+.s ." < should be 0" cr
+
+fulltest bind double-linked-list construct
+25 fulltest ll-cell!
+35 fulltest ll-cell!
+45 fulltest ll-cell!
+fulltest ll-size@ . ." < should be 3" cr
+fulltest ll-set-start
+fulltest ll-cell@ . ." < should be 25" cr fulltest ll> drop
+fulltest ll-cell@ . ." < should be 35" cr fulltest ll> drop
+fulltest ll-cell@ . ." < should be 45" cr
+1 fulltest nll-cell@ . ." < should be 35" cr
+5 fulltest nll-cell@ . ." < should be 45" cr
+fulltest bind double-linked-list print cr
+fulltest destruct
+.s ." < should be 0" cr
