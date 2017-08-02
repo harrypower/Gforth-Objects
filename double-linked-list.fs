@@ -211,9 +211,13 @@ object class
     cell-buffer !
     cell-buffer cell this ll! ;m method ll-cell!
   m: ( double-linked-list -- nnumber ) \ retrieve nnumber from linked list at next location
-    this ll@ drop
-    cell-buffer cell move
-    cell-buffer @ ;m method ll-cell@
+  \ note if the linked list is empty nnumber will be 0
+    this ll@ 0 > if
+      cell-buffer cell move
+      cell-buffer @
+    else
+      0
+    then ;m method ll-cell@
   m: ( uindex double-linked-list -- nnumber ) \ retrieve nnumber from linked list at uindex location if it exists
       \ note nnumber will be the last number in the linked list if uindex exceeds size if this linked list
     this nll@ drop
@@ -272,6 +276,11 @@ fulltest ll-cell@ . ." < should be 35" cr fulltest ll> drop
 fulltest ll-cell@ . ." < should be 45" cr
 1 fulltest nll-cell@ . ." < should be 35" cr
 5 fulltest nll-cell@ . ." < should be 45" cr
+fulltest delete-last
+fulltest delete-last
+fulltest delete-last
+fulltest ll-size@ . ." < should be 0"  cr
+fulltest ll-cell@ . ." < should be 0"  cr
 fulltest bind double-linked-list print cr
 fulltest destruct
 .s ." < should be 0" cr
