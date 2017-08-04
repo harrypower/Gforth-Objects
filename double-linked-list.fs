@@ -219,7 +219,7 @@ object class
       0
     then ;m method ll-cell@
   m: ( uindex double-linked-list -- nnumber ) \ retrieve nnumber from linked list at uindex location if it exists
-      \ note nnumber will be the last number in the linked list if uindex exceeds size if this linked list
+      \ note nnumber will be the last number in the linked list if uindex exceeds size of this linked list
     this nll@ drop
     cell-buffer cell move
     cell-buffer @

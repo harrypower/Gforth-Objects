@@ -134,5 +134,5 @@
       - note if the linked list is empty nnumber will be 0
   * `nll-cell@`     _( uindex double-linked-list -- nnumber )_
       - retrieve nnumber from linked list at uindex location if it exists
-      - note nnumber will be the last number in the linked list if uindex exceeds size if this linked list
-      - note nnumber will be 0 if there are no nodes stored in link list 
+      - note nnumber will be the last number in the linked list if uindex exceeds size of this linked list
+      - note nnumber will be 0 if there are no nodes stored in link list
