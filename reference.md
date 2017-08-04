@@ -58,7 +58,7 @@
       - caddr2 u2 contains the left over string if caddr u string is found and removed or it will simply be the full string from this string object array
   * `split$to$s`          _( nstring-split$ nstring-source$ strings -- )_
       - split up nstring-source$ with nstring-split$
-      - nstring-source$ is split each time nstring-split$ is found and placed in this strings object
+      - nstring-source$ is spl__it each time nstring-split$ is found and placed in this strings object
       - nstring-split$ is removed each time it is found and when no more are found process is done
       - Note nstring-source$ string will contain the last split string but that string it is also placed in this strings object
       - Note null strings or strings of zero size could be found and placed in this strings object during spliting process
@@ -74,4 +74,65 @@
   * `copy$s`              _( nstrings strings -- )_
       - copy strings object to this strings object
   * `print`               _( strings -- )_
-      - print debug info on this strings object 
+      - print debug info on this strings object
+
+* ### double-linked-list
+  double-linked-list.fs
+  * `construct`     _( double-linked-list -- )_
+  * `destruct`      _( double-linked-list -- )_
+  * `print`         _( double-linked-list -- )_
+      - display information about objects contents
+  * `ll!`           _( caddr u double-linked-list -- )_
+      - add to link list a node at the end and update all the link list node data
+      - caddr  is address of data to add to this node
+      - u is the quantity of bytes to add to this node
+      - note caddr u data is copied into a new heap location
+  * `ll@`           _( double-linked-list -- caddr u )_
+      - get node data from current node.
+      - If there is no nodes in the linked list u will be 0 and caddr will be 0 indicating a null retrieval
+  * `ll-size@`      _( double-linked-list -- u )_
+      - get linked list node quantity
+  * `ll<`           _( double-linked-list -- nflag )_
+      - step one node back from current node.
+      - nflag is true if step can not happend because at start node already or if there is no nodes in linked list to move to!
+      - nflag is false if step did happen!
+  * `ll>`           _( double-linked-list -- nflag )_
+      - step one node forward from current node.
+      - nflag is true if step can not happen because at last node already or if there is no nodes in linked list to move to!
+      - nflag is false if step did happen!( double-linked-list -- )
+
+  * `ll@>`          _( double-linked-list -- caddr u nflag )_
+      - get node payload and step to next node
+      - nflag is true if step can not happen because at last node already or if there is no nodes in linked list to step to!
+      - nflag is false if step did happen
+      - caddr and u will will be the node payload before the step if there are any linked list nodes
+      - if there are no linked list nodes caddr and u will both be 0
+  * `ll@<`         _( double-linked-list -- caddr u nflag )_
+      - get node payload and step to next node
+      - nflag is true if step can not happen because at first node already or if there is no nodes in linked list to step to!
+      - nflag is false if step did happen
+      - caddr and u will will be the node payload before the step if there are any linked list nodes
+      - if there are no linked list nodes caddr and u will both be 0
+  * `ll-set-start`  _( double-linked-list -- )_
+      - set link list retrieve to the start of this linked list
+  * `ll-set-end`    _( double-linked-list -- )_
+      - set link list retrieve to the start of this linked list
+  * `delete-last`   _( double-linked-list -- )_
+      - delete the last node in this linked list
+  * `delete-first`  _(double-linked-list -- )_
+      - delete the fist node in this linked list
+  * `delete-n-item` _( uindex double-linked-list -- )_
+      - delete uindex item in list
+  * `nll@`          _( uindex double-linked-list -- caddr u )_
+      - retrieve uindex link list payload
+  * `seedata`       _( uindex double-linked-list -- )_
+      - testing ... see link data internal addresses for uindex node
+  * `ll-cell!`      _( nnumber double-linked-list -- )_
+      - store nnumber as next linked item
+  * `ll-cell@`      _( double-linked-list -- nnumber )_
+      - retrieve nnumber from linked list at next node
+      - note if the linked list is empty nnumber will be 0
+  * `nll-cell@`     _( uindex double-linked-list -- nnumber )_
+      - retrieve nnumber from linked list at uindex location if it exists
+      - note nnumber will be the last number in the linked list if uindex exceeds size if this linked list
+      - note nnumber will be 0 if there are no nodes stored in link list 
