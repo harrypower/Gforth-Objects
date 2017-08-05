@@ -136,3 +136,22 @@
       - retrieve nnumber from linked list at uindex location if it exists
       - note nnumber will be the last number in the linked list if uindex exceeds size of this linked list
       - note nnumber will be 0 if there are no nodes stored in link list
+
+* ### svgmaker
+  * `construct`         _( svgmaker -- )_
+  * `destruct`          _( svgmaker -- )_
+  * `svgheader`         _( nstrings-header svgmaker -- )_
+      - start svg string and place nstrings contents as header to svg
+  * `svgtext`           _( nstrings-attr nx ny nstring-text svgmaker -- )_
+      - to make svg text
+      - nstirngs-attr is strings for attribute of text
+      - nx ny are text x and y of svg text tag
+      - nstring-text is the string object address of the string
+  * `svgpath`           _( nstrings-attr nstrings-pathdata svgmaker -- )_
+      - make a svg path with nstring-attr and nstrings-pathdata
+  * `svgcircle`         _( nstring-attr nx ny nr svgmaker -- )_
+      - make a svg circle with nstring-attr at nx and ny with radius nr
+  * `svgend`            _( svgmaker -- caddr u )_
+      - finish forming the svg string and output it
+  * `print`             _( svgmaker -- )_
+      - print the svg string directly
