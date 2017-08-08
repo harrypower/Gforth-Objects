@@ -138,6 +138,7 @@
       - note nnumber will be 0 if there are no nodes stored in link list
 
 * ### svgmaker
+  svgmaker.fs
   * `construct`         _( svgmaker -- )_
   * `destruct`          _( svgmaker -- )_
   * `svgheader`         _( nstrings-header svgmaker -- )_
