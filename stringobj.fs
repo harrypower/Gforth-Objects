@@ -34,14 +34,14 @@ object class
     0 string-addr !
     0 string-size ! ;m overrides construct
   m: ( string -- ) \ free allocated memory
-    string-addr @ 0> if string-addr @ free throw then
+    string-addr @ 0<>  if string-addr @ free throw then
     this [current] construct ;m overrides destruct
   m: ( caddr u string -- ) \ store string
     dup 0>
     if
       dup allocate throw { u caddr1 }
       caddr1 u move
-      string-addr @ 0>
+      string-addr @ 0<>
       if
         string-addr @ free throw
         0 string-addr !
@@ -50,13 +50,13 @@ object class
       u string-size !
     else 2drop this [current] destruct then ;m method !$
   m: ( string -- caddr u ) \ retrieve string
-    string-addr @ 0>
+    string-addr @ 0<>
     if
        string-addr @ string-size @
     else 0 0
     then ;m method @$
   m: ( caddr u string -- ) \ add a string to this string at end of!
-    string-addr @ 0>
+    string-addr @ 0<>
     if \ resize
        dup 0>
        if
@@ -68,7 +68,7 @@ object class
        this [current] !$
     then ;m method !+$
   m: ( caddr u string -- ) \ add string to begining of this string
-    string-addr @ 0>
+    string-addr @ 0<>
     if \ resize
        dup 0>
        if
@@ -117,7 +117,7 @@ object class
        0 array !
   ;m overrides construct
   m: ( strings -- ) \ free allocated memory
-    array @ 0>
+    array @ 0<>
     if \ deallocate memory allocated for the array and free the string objects
        qty @ 0 ?do array @ i cell * + @ dup [bind] string destruct free throw loop
        array @ free throw
@@ -187,7 +187,7 @@ object class
   	fd$ src$ this [current] split$to$s
   	fd$ [bind] string destruct src$ [bind] string destruct ;m method split$>$s
   m: ( strings -- u ) \ report size of strings array
-    array @ 0>
+    array @ 0<>
     if qty @ else 0 then ;m method $qty
   m: ( strings -- ) \ reset index to start of strings list for output purposes
     0 index ! ;m method reset
@@ -236,3 +236,4 @@ s" 1x2" test$s !$x
 s" x" test$s split$s .s cr
 dump
 dump
+test$s print cr
