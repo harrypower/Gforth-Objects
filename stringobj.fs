@@ -96,6 +96,13 @@ object class
     else \ make new string
        this [current] !$
     then ;m method !<+$
+
+  m: ( string -- ) \ add a null to end of this string
+      1 allocate throw { atemp }
+      atemp 1 0 fill
+      atemp 1 this [current] !+$
+      atemp free throw 
+  ;m method null+>$
   m: ( caddr u string -- caddr1 u1 caddr2 u2 nflag ) \ split this string object stored string by caddr u if caddr u is found in stored string
   \ caddr1 u1 will be the split string before caddr u if caddr u is found in stored string
   \ caddr2 u2 will be the split string after caddr u if caddr us is found in stored string
