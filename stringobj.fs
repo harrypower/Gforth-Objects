@@ -55,6 +55,20 @@ object class
        string-addr @ string-size @
     else 0 0
     then ;m method @$
+  m: ( ud string -- ) \ make string to represent ud in base 10
+    base @ >r decimal <# #s #> r> base ! this [current] !$
+  ;m method ud>$
+  m: ( u string -- ) \ make string to represent u in base 10
+    0 this [current] ud>$
+  ;m method u>$
+  m: ( d string -- ) \ make string to represent d in base 10
+    base @ >r decimal <# swap over dabs #s rot sign #> r> base ! this [current] !$
+  ;m method d>$
+  m: ( s string -- ) \ make string to represent u in base 10
+    dup 0< if -1 else 0 then
+    this [current] d>$
+  ;m method s>$
+
   m: ( caddr u string -- ) \ add a string to this string at end of!
     string-addr @ 0<>
     if \ resize
