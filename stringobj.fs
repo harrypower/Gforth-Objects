@@ -64,7 +64,7 @@ object class
   m: ( d string -- ) \ make string to represent d in base 10
     base @ >r decimal <# swap over dabs #s rot sign #> r> base ! this [current] !$
   ;m method d>$
-  m: ( s string -- ) \ make string to represent u in base 10
+  m: ( n string -- ) \ make string to represent n in base 10
     dup 0< if -1 else 0 then
     this [current] d>$
   ;m method s>$
@@ -101,7 +101,7 @@ object class
       1 allocate throw { atemp }
       atemp 1 0 fill
       atemp 1 this [current] !+$
-      atemp free throw 
+      atemp free throw
   ;m method null+>$
   m: ( caddr u string -- caddr1 u1 caddr2 u2 nflag ) \ split this string object stored string by caddr u if caddr u is found in stored string
   \ caddr1 u1 will be the split string before caddr u if caddr u is found in stored string
